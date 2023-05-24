@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    // copied from vite config
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["vite/client", "react", "react-dom", "react/jsx-runtime", "./types/global.d.ts", "node"]
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.tsx",
+    "pages/ExitIframe.tsx",
+    "pages/index.tsx",
+    "pages/NotFound.tsx",
+    "components/index.ts",
+    "components/ProductsCard.tsx",
+    "../node_modules/@prisma/client/index.d.ts"
+  ]
+}

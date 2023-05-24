@@ -1,0 +1,23 @@
+{
+  "name": "component-manager",
+  "version": "1.0.0",
+  "main": "web/index.js",
+  "license": "UNLICENSED",
+  "scripts": {
+    "shopify": "shopify",
+    "build": "shopify app build",
+    "dev": "shopify app dev --tunnel-url https://255e-2604-2d80-5787-d700-c09c-711b-d176-e250.ngrok-free.app:1738",
+    "webhook": "shopify webhook trigger --topic=inventory_levels/update --api-version=2023-07 --delivery-method=http --address=https://255e-2604-2d80-5787-d700-c09c-711b-d176-e250.ngrok-free.app/api/webhooks ",
+    "info": "shopify app info",
+    "generate": "shopify app generate",
+    "deploy": "shopify app deploy"
+  },
+  "dependencies": {
+    "@shopify/app": "3.45.3",
+    "@shopify/cli": "3.45.3"
+  },
+  "author": "markossankey",
+  "devDependencies": {
+    "ngrok": "^4.3.3"
+  }
+}

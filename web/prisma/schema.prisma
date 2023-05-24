@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Shop {
+  id                  String                  @id @default(cuid())
+  externalId          String                  @unique
+  shop                String                  @unique
+  state               String
+  isOnline            Boolean
+  scope               String
+  accessToken         String
+  isFirstLogin        Boolean                 @default(true)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @default(now()) @updatedAt
+  products            Product[]
+  variants            Variant[]
+  components          Component[]
+  locations           Location[]
+  productConnections  ComponentsInVariants[]
+  locationConnections ComponentsInLocations[]
+  webhooks            Webhook[]
+  variantLocations    VariantsInLocations[]
+}
+
+model Webhook {
+  id            String   @id @default(cuid())
+  externalId    String   @unique
+  topic         String
+  payload       Json
+  actionTakenAt DateTime @default(now())
+  recordedAt    DateTime @default(now())
+  shopId        String
+  shop          Shop     @relation(fields: [shopId], references: [shop], onDelete: Cascade)
+  isProcessed   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @default(now()) @updatedAt
+}
+
+model Component {
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @default(now()) @updatedAt
+  id        String                  @id @default(cuid())
+  shopId    String
+  shop      Shop                    @relation(fields: [shopId], references: [shop], onDelete: Cascade)
+  locations ComponentsInLocations[]
+  name      String
+  variants  ComponentsInVariants[]
+}
+
+model Location {
+  createdAt  DateTime                @default(now())
+  updatedAt  DateTime                @default(now()) @updatedAt
+  id         String                  @id @default(cuid())
+  shopId     String
+  shop       Shop                    @relation(fields: [shopId], references: [shop], onDelete: Cascade)
+  externalId String                  @unique
+  variants   VariantsInLocations[]
+  components ComponentsInLocations[]
+  name       String
+
+  @@unique([externalId, shopId])
+}
+
+model Product {
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @default(now()) @updatedAt
+  id         String    @id @default(cuid())
+  shopId     String
+  shop       Shop      @relation(fields: [shopId], references: [shop], onDelete: Cascade)
+  externalId String    @unique
+  variants   Variant[]
+  name       String
+
+  @@unique([externalId, shopId])
+}
+
+model Variant {
+  createdAt           DateTime               @default(now())
+  updatedAt           DateTime               @default(now()) @updatedAt
+  id                  String                 @id @default(cuid())
+  shopId              String
+  shop                Shop                   @relation(fields: [shopId], references: [shop], onDelete: Cascade)
+  externalId          String                 @unique
+  externalInventoryId String
+  externalProductId   String
+  product             Product                @relation(fields: [externalProductId], references: [externalId], onDelete: Cascade)
+  locations           VariantsInLocations[]
+  components          ComponentsInVariants[]
+  name                String                
+
+  @@unique([externalId, externalInventoryId, shopId])
+}
+
+model ComponentsInLocations {
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now()) @updatedAt
+  id          String    @id @default(cuid())
+  shopId      String
+  shop        Shop      @relation(fields: [shopId], references: [shop], onDelete: Cascade)
+  componentId String
+  component   Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  externalLocationId  String
+  location    Location  @relation(fields: [externalLocationId], references: [externalId], onDelete: Cascade)
+  inStock     Int       @default(0)
+
+  @@unique([componentId, externalLocationId, shopId])
+}
+
+model VariantsInLocations {
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+  id         String   @id @default(cuid())
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [shop], onDelete: Cascade)
+  externalVariantId  String
+  variant    Variant  @relation(fields: [externalVariantId], references: [externalId], onDelete: Cascade)
+  externalLocationId String
+  location   Location @relation(fields: [externalLocationId], references: [externalId], onDelete: Cascade)
+  inStock    Int      @default(0)
+
+  @@unique([externalVariantId, externalLocationId, shopId])
+}
+
+model ComponentsInVariants {
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @default(now()) @updatedAt
+  id                   String    @id @default(cuid())
+  shopId               String
+  shop                 Shop      @relation(fields: [shopId], references: [shop], onDelete: Cascade)
+  componentId          String
+  component            Component @relation(fields: [componentId], references: [id], onDelete: Cascade)
+  externalVariantId            String
+  variant              Variant   @relation(fields: [externalVariantId], references: [externalId], onDelete: Cascade)
+  componentsPerVariant Int
+
+  @@unique([componentId, externalVariantId, shopId])
+}
